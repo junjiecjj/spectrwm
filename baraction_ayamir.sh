@@ -13,13 +13,25 @@
 
 ## DISK
 hdd() {
-  hdd="$(df -h | awk 'NR==4{print $3, $5}')"
-  echo -e "HDD: $hdd"
+  # hdd="$(df -h | awk 'NR==4{print $3, $5}')"
+  # hdd=`df -h | awk 'NR==4{print $3, $5}')`
+  hdd=`df -h | awk '/home/ {print $3, $2}'`
+  echo -e "/home: $hdd"
 }
+
+hdd1() {
+  # hdd="$(df -h | awk 'NR==4{print $3, $5}')"
+  hdd=`df -h | awk 'NR==4{print $3, $2}'`
+  # hdd=`df -h | awk '/home/ {print $3, $2}'`
+  echo -e "/: $hdd"
+}
+
 
 ## RAM
 mem() {
-  mem=`free | awk '/Mem/ {printf "%dM / %dM\n", $3 / 1024.0, $2 / 1024.0 }'`
+  # mem=`free | awk '/Mem/ {printf "%dM / %dM\n", $3 / 1024.0, $2 / 1024.0 }'`
+  # mem=`free | awk 'NR==2{printf "%dM / %dM\n", $3 / 1024.0, $2 / 1024.0 }'`
+  mem=`free | awk 'NR==2{printf "%.2fG/%.2fG\n", $3/1024.0/1024.0, $2/1024.0/1024.0 }'`
   echo -e "RAM: $mem"
 }
 ## CPU
@@ -35,7 +47,7 @@ cpu() {
 
 ## VOLUME
 vol() {
-    vol=`amixer get Master | awk -F'[][]' 'END{ print $4":"$2 }' | sed 's/on://g'`
+    vol=`amixer get Master | awk -F'[][]' 'END{ print $2" "$4 }' | sed 's/on://g'`
     echo -e "VOL: $vol"
 }
 
@@ -48,11 +60,11 @@ bat() {
 	power=$(cat /sys/class/power_supply/BAT0/capacity)
     status=$(cat /sys/class/power_supply/BAT0/status)
     if [ "$status" == "Charging" ]; then
-        echo -e "$power%"
+        echo -e "BAT:$power%"
     elif [ "$status" == "Discharging" ]; then
-        echo -e "$power%"
+        echo -e "BAT:$power%"
     elif [ "$status" == "Full" ]; then
-        echo -e "FULL"
+        echo -e "BAT:FULL"
     fi
 }
 
@@ -64,6 +76,7 @@ SLEEP_SEC=0.2
 # So I would love to add more functions to this script but it makes the
 # echo output too long to display correctly.
 while :; do
-    echo "+@fg=3; +@fn=0;$(cpu) | +@fg=4; +@fn=0;$(mem) | +@fg=2; +@fn=0;$(hdd) | +@fg=8; +@fn=0;$(bat) | +@fg=5; +@fn=0;$(brt) | +@fg=7; +@fn=0;$(vol)"
+    # echo "+@fg=3; +@fn=0;$(cpu) | +@fg=4; +@fn=0;$(mem) | +@fg=2; +@fn=0;$(hdd) | +@fg=8; +@fn=0;$(bat) | +@fg=5; +@fn=0;$(brt) | +@fg=7; +@fn=0;$(vol)"
+    echo "[$(cpu) | $(mem) | $(hdd1)|$(hdd) | $(bat) | $(brt) | $(vol)]"
 	sleep $SLEEP_SEC
 done
