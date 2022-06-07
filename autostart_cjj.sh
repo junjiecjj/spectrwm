@@ -82,10 +82,9 @@ fi
 
 
 # 桌面通知
-if [ -z "$(pgrep   dunst)" ] ; then
+if [ -z "$(pgrep  dunst)" ] ; then
     dunst &
 fi
-
 
 
 # 剪切板管理器
